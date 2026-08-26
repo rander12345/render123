@@ -1,0 +1,3 @@
+school_registrations.db
+__pycache__/
+.env

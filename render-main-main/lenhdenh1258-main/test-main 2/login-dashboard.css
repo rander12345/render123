@@ -1,0 +1,9 @@
+@import url('dashboard.css');
+
+.header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 18px; }
+.header-actions a { color: var(--blue); font-size: 13px; font-weight: 700; text-decoration: none; }
+.header-actions a:hover { text-decoration: underline; }
+
+@media (max-width: 680px) {
+  .header-actions { justify-content: flex-start; gap: 12px; }
+}

