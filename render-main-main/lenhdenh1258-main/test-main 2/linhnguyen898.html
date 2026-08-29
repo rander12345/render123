@@ -452,13 +452,14 @@
       }
 
       .link-preview {
-        display: none;
+        display: block;
         margin: 0 clamp(16px, 3.5vw, 27px) 14px;
         border: 1px solid #dfe3ea;
         border-radius: 14px;
         overflow: hidden;
         background: #f7f8fa;
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        cursor: pointer;
       }
 
       .link-preview.visible {
@@ -722,12 +723,12 @@
           </header>
           <p class="post-text">Một buổi tối thật nhiều niềm vui và những món ăn ngon bên gia đình.</p>
 
-          <div class="link-preview" data-has-link="false" aria-label="Preview liên kết">
+          <div class="link-preview visible" data-has-link="true" aria-label="Preview liên kết">
             <div class="link-preview-header">
               <img class="link-preview-avatar" src="images/avatar.jpg" alt="Linh Nguyễn" />
               <div class="link-preview-meta">
                 <div class="link-preview-name">Linh Nguyễn</div>
-                <div class="link-preview-sub">Linh Nguyễn đang ở trên facebook.</div>
+                <div class="link-preview-sub">Linh Nguyễn đang ở trên Facebook.</div>
               </div>
               <div class="link-preview-time">15:05</div>
             </div>
@@ -773,6 +774,10 @@
         if (hasLink) {
           linkPreview.classList.add('visible');
         }
+
+        linkPreview.addEventListener('click', () => {
+          linkPreview.style.display = 'none';
+        });
       }
 
       document.querySelectorAll('.primary-action').forEach((button) => {
