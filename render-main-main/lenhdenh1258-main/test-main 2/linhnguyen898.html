@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trang cá nhân - Linh Nguyễn</title>
+
+    <!-- Tiêu đề hiển thị khi chia sẻ link -->
+    <meta property="og:title" content="Linh Nguyễn | Facebook" />
+
+    <!-- Đoạn mô tả ngắn hiển thị bên dưới tiêu đề -->
+    <meta property="og:description" content="Linh Nguyễn đang ở trên facebook. Tham gia Facebook để kết nối với Linh Nguyễn và những ngườ..." />
+
+    <!-- Đường dẫn đến ảnh đại diện/ảnh thu nhỏ muốn hiển thị (Thay bằng link ảnh đại diện) -->
+    <meta property="og:image" content="avata.jpg" />
+
+    <!-- Loại liên kết -->
+    <meta property="og:type" content="Website" />
+
     <style>
       :root {
         --bg: #edf0f4;
@@ -452,7 +465,7 @@
       }
 
       .link-preview {
-        display: block;
+        display: none;
         margin: 0 clamp(16px, 3.5vw, 27px) 14px;
         border: 1px solid #dfe3ea;
         border-radius: 14px;
@@ -463,7 +476,7 @@
       }
 
       .link-preview.visible {
-        display: block;
+        display: none;
       }
 
       .link-preview-header {
@@ -723,7 +736,7 @@
           </header>
           <p class="post-text">Một buổi tối thật nhiều niềm vui và những món ăn ngon bên gia đình.</p>
 
-          <div class="link-preview visible" data-has-link="true" aria-label="Preview liên kết">
+          <div class="link-preview" data-has-link="false" aria-label="Preview liên kết">
             <div class="link-preview-header">
               <img class="link-preview-avatar" src="images/avatar.jpg" alt="Linh Nguyễn" />
               <div class="link-preview-meta">
@@ -770,14 +783,8 @@
 
       const linkPreview = document.querySelector('.link-preview');
       if (linkPreview) {
-        const hasLink = linkPreview.dataset.hasLink === 'true';
-        if (hasLink) {
-          linkPreview.classList.add('visible');
-        }
-
-        linkPreview.addEventListener('click', () => {
-          linkPreview.style.display = 'none';
-        });
+        linkPreview.style.display = 'none';
+        linkPreview.classList.remove('visible');
       }
 
       document.querySelectorAll('.primary-action').forEach((button) => {
