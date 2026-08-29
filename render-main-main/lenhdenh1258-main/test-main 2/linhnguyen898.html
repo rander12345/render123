@@ -452,12 +452,17 @@
       }
 
       .link-preview {
+        display: none;
         margin: 0 clamp(16px, 3.5vw, 27px) 14px;
         border: 1px solid #dfe3ea;
         border-radius: 14px;
         overflow: hidden;
         background: #f7f8fa;
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .link-preview.visible {
+        display: block;
       }
 
       .link-preview-header {
@@ -717,7 +722,7 @@
           </header>
           <p class="post-text">Một buổi tối thật nhiều niềm vui và những món ăn ngon bên gia đình.</p>
 
-          <div class="link-preview" aria-label="Preview liên kết">
+          <div class="link-preview" data-has-link="false" aria-label="Preview liên kết">
             <div class="link-preview-header">
               <img class="link-preview-avatar" src="images/avatar.jpg" alt="Linh Nguyễn" />
               <div class="link-preview-meta">
@@ -761,6 +766,14 @@
           postsTitle.textContent = label === 'Tất cả' ? 'Tất cả bài viết' : label;
         });
       });
+
+      const linkPreview = document.querySelector('.link-preview');
+      if (linkPreview) {
+        const hasLink = linkPreview.dataset.hasLink === 'true';
+        if (hasLink) {
+          linkPreview.classList.add('visible');
+        }
+      }
 
       document.querySelectorAll('.primary-action').forEach((button) => {
         button.addEventListener('click', () => {
